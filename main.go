@@ -2,8 +2,19 @@ package main
 
 import "time"
 
+// books := []Book{
+// 	{Title: "fancy title", Price:"90", Availability:"yes"},
+// 	{Title: "fancy title", Price:"90", Availability:"yes"},
+// 	{Title: "fancy title", Price:"90", Availability:"yes"},
+
+// }
+
+// downloader := NewDownloader()
+
+// downloader.WriteDataToJSON(books, 1)
+
 func main() {
-	maxURLsToCrawl := 50              // Set the maximum number of URLs to crawl
+	maxURLsToCrawl := 10              // Set the maximum number of URLs to crawl
 	crawlTimeout := 5 * time.Second   // Set the timeout for fetching URLs
 
 	crawler := NewCrawler(maxURLsToCrawl, crawlTimeout)

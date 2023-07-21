@@ -55,8 +55,22 @@ func (c *Crawler) processURL(url string) {
 		return
 	}
 
-	links := extractLinks(body, url) 
+	links := c.Parser.ExtractLinks(body, url) 
 	fmt.Printf("Found %d links on %s\n", len(links), url)
+
+	books, err := c.Parser.ParseBooks(body)
+	if err != nil {
+		fmt.Println("Error parsing books:", err)
+		return
+	}
+
+	err = c.Downloader.WriteDataToJSON(books, c.CrawledURLsCount)
+	if err != nil {
+		if err != nil {
+			fmt.Println("Error downloading data:", err)
+			return
+		}
+	}
 
 	c.Frontier.RemoveURL(url)
 	c.CrawledURLsCount++
