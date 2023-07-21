@@ -2,98 +2,64 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"sync"
-
-	"golang.org/x/net/html"
+	"time"
 )
 
 type Crawler struct {
-	Visited map[string]bool
-	mutex sync.Mutex
+	Frontier *URLFrontier
+	Downloader *Downloader
+	MaxURLsToCrawl   int
+	CrawlTimeout     time.Duration
+	CrawledURLsCount int
 }
 
-func NewCrawler() *Crawler {
+func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration) *Crawler {
 	return &Crawler{
-		Visited: make(map[string]bool),
-		mutex: sync.Mutex{},
+		Frontier: NewURLFrontier(),
+		Downloader: NewDownloader(),
+		MaxURLsToCrawl:   maxURLsToCrawl,
+		CrawlTimeout:     crawlTimeout,
+		CrawledURLsCount: 0,
 	}
 }
 
-func (c *Crawler) fetchHTML(url string) (string, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to fetch %s: %s", url, resp.Status)
-	}
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(bodyBytes), nil
-}
-
-func (c *Crawler) extractLinks(body string) []string {
-	var links []string
-	tokenizer := html.NewTokenizer(strings.NewReader(body))
-
-	for {
-		tokenType := tokenizer.Next()
-		if tokenType == html.ErrorToken {
+func (c *Crawler) Crawl() {
+	for !c.Frontier.IsEmpty() {
+		if c.CrawledURLsCount >= c.MaxURLsToCrawl {
+			fmt.Println("Reached the maximum number of URLs to crawl.")
 			break
 		}
 
-		if tokenType == html.StartTagToken {
-			token := tokenizer.Token()
-			if token.Data == "a" {
-				for _, attr := range token.Attr {
-					if attr.Key == "href" {
-						links = append(links, attr.Val)
-					}
-				}
-			}
+		url := c.Frontier.GetNextURL()
+		if url != "" {
+			c.processURL(url)
 		}
 	}
-
-	return links
 }
 
-func (c *Crawler) Crawl(url string) {
-	c.mutex.Lock()
-	if c.Visited[url] {
-		c.mutex.Unlock()
+// 
+// fetches html and then extracts the links 
+// marks the link as visited, and then dequeues it
+//
+func (c *Crawler) processURL(url string) {
+	if c.Frontier.HasURL(url) {
+		fmt.Printf("Already visited url %s", url)
 		return
 	}
-	c.Visited[url] = true
-	c.mutex.Unlock()
 
-	body, err := c.fetchHTML(url)
+	body, err := c.Downloader.Download(url)
 	if err != nil {
 		fmt.Printf("Error fetching URL %s: %s\n", url, err)
 		return
 	}
 
-	links := c.extractLinks(body)
+	links := extractLinks(body, url) 
 	fmt.Printf("Found %d links on %s\n", len(links), url)
 
-	var wg sync.WaitGroup
+	c.Frontier.RemoveURL(url)
+	c.CrawledURLsCount++
+
 	for _, link := range links {
-		wg.Add(1)
-		go func(link string) {
-			defer wg.Done()
-			c.Crawl(link)
-		}(link)
+		c.Frontier.AddURL(link)
 	}
-	wg.Wait()
 }
-
-
-

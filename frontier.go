@@ -21,7 +21,6 @@ func (f *URLFrontier) AddURL(url string) {
 
 	if !f.visited[url] {
 		f.queue = append(f.queue, url)
-		f.visited[url] = true
 	}
 }
 
@@ -51,3 +50,10 @@ func (f *URLFrontier) HasURL(url string) bool {
 
 	return f.visited[url]
 }
+
+func (f *URLFrontier) RemoveURL(url string) {
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
+
+	f.visited[url] = true
+} 
