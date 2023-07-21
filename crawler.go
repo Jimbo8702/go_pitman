@@ -8,6 +8,7 @@ import (
 type Crawler struct {
 	Frontier *URLFrontier
 	Downloader *Downloader
+	Parser *Parser
 	MaxURLsToCrawl   int
 	CrawlTimeout     time.Duration
 	CrawledURLsCount int
@@ -17,6 +18,7 @@ func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration) *Crawler {
 	return &Crawler{
 		Frontier: NewURLFrontier(),
 		Downloader: NewDownloader(),
+		Parser: NewParser(),
 		MaxURLsToCrawl:   maxURLsToCrawl,
 		CrawlTimeout:     crawlTimeout,
 		CrawledURLsCount: 0,
