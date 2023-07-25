@@ -1,0 +1,13 @@
+Build the full crawler and make the data type or types changeable from the main function
+
+Have error handling 
+
+Have a real queue/messaging system
+
+Have IP Rotation and auto captcha solving 
+
+Add in wait times/limits between calls to aviod banning/overloading servers
+
+Save the data to a database, save the urls to redis
+
+Have a dublicate check system for data/links or pages
