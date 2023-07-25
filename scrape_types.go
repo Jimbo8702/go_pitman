@@ -12,7 +12,6 @@ type Book struct {
 	Availability string
 }
 
-
 func parseBook(html string) (Parseable, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {

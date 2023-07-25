@@ -5,5 +5,8 @@
   "start_url": "https://books.toscrape.com/",
   "output_folder": "data",
   "output_name": "books",
-  "output_file_extension": "json"
+  "output_file_extension": "json",
+  "$schema": {
+    "example fields": "example"
+  }
 }

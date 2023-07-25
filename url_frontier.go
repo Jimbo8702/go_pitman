@@ -10,9 +10,9 @@ type URLFrontier struct {
 	mutex   sync.Mutex
 }
 
-func NewURLFrontier() *URLFrontier {
+func NewURLFrontier(startURL string) *URLFrontier {
 	return &URLFrontier{
-		queue:   make([]string, 0),
+		queue:   []string{startURL},
 		visited: make(map[string]bool),
 	}
 }
