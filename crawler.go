@@ -15,12 +15,12 @@ type Crawler struct {
 	CrawledURLsCount int
 }
 
-func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration, maxRequestsPerSecond int) *Crawler {
+func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration, fontier *URLFrontier, downloader *Downloader, parser *Parser, limiter *RateLimiter) *Crawler {
 	return &Crawler{
-		Frontier: NewURLFrontier(),
-		Downloader: NewDownloader(),
-		Parser: NewParser(),
-		Limiter: NewRateLimiter(maxRequestsPerSecond),
+		Frontier: fontier,
+		Downloader: downloader,
+		Parser: parser,
+		Limiter: limiter,
 		MaxURLsToCrawl:   maxURLsToCrawl,
 		CrawlTimeout:     crawlTimeout,
 		CrawledURLsCount: 0,
@@ -67,13 +67,13 @@ func (c *Crawler) processURL(url string) {
 	links := c.Parser.ExtractLinks(body, url) 
 	fmt.Printf("Found %d links on %s\n", len(links), url)
 
-	books, err := c.Parser.ParseBooks(body)
+	data, err := c.Parser.Parse(body)
 	if err != nil {
-		fmt.Println("Error parsing books:", err)
+		fmt.Println("Error parsing:", err)
 		return
 	}
 
-	err = c.Downloader.WriteDataToJSON(books, c.CrawledURLsCount)
+	err = c.Downloader.WriteDataToJSON(data, c.CrawledURLsCount)
 	if err != nil {
 		if err != nil {
 			fmt.Println("Error downloading data:", err)

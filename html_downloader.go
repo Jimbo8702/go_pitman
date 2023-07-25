@@ -10,11 +10,17 @@ import (
 
 type Downloader struct {
 	Client   *http.Client
+	OutputFolder           string     
+    OutputName             string      
+    OutputFileExtension    string   
 }
 
-func NewDownloader() *Downloader {
+func NewDownloader(outFolder, outputName, outputFile string) *Downloader {
 	return &Downloader{
 		Client:   &http.Client{Timeout: 5 * time.Second},
+		OutputFolder: outFolder,
+		OutputName: outputName,
+		OutputFileExtension: outputFile,
 	}
 }
 
@@ -37,8 +43,8 @@ func (d *Downloader) Download(url string) (string, error) {
 	return string(bodyBytes), nil
 }
 
-func (d *Downloader) WriteDataToJSON(data []Book, urlNumber int) error {
-	filename := generateDynamicFilename("books", fmt.Sprint(urlNumber), "json")
+func (d *Downloader) WriteDataToJSON(data Parseable, urlNumber int) error {
+	filename := fmt.Sprintf("%s/%s_%s_.%s", d.OutputFolder, d.OutputName ,fmt.Sprint(urlNumber), d.OutputFileExtension)
 
 	jsonString, err := json.Marshal(data)
 	if err != nil {

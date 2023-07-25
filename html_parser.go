@@ -5,14 +5,29 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 )
 
-type Parser struct{}
+// Define a generic interface for the struct to be parsed
+type Parseable interface{}
 
-func NewParser() *Parser {
-	return &Parser{}
+// Define a generic parse function that takes a string and returns the parsed struct and error
+type ParseFunc func(string) (Parseable, error)
+
+// Parser struct
+type Parser struct{
+	Parser ParseFunc
+}
+
+func NewParser(parseFunc ParseFunc) *Parser {
+	return &Parser{
+		Parser: parseFunc,
+	}
+}
+
+// Generic Parse function that accepts the parse function and HTML string to parse
+func (p *Parser) Parse(html string) (Parseable, error) {
+	return p.Parser(html)
 }
 
 func (p *Parser) ExtractLinks(body string, baseURL string) []string {
@@ -49,29 +64,3 @@ func (p *Parser) ExtractLinks(body string, baseURL string) []string {
 	return links
 }
 
-func (p *Parser) ParseBooks(html string) ([]Book, error) {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-	if err != nil {
-		return nil, err
-	}
-
-	var books []Book
-
-	doc.Find("article.product_pod").Each(func(i int, s *goquery.Selection) {
-		title := s.Find("h3 a").Text()
-		price := s.Find("p.price_color").Text()
-		availability := s.Find("p.instock.availability").Text()
-
-		availability = strings.TrimSpace(availability)
-
-		book := Book{
-			Title:       title,
-			Price:       price,
-			Availability: availability,
-		}
-
-		books = append(books, book)
-	})
-
-	return books, nil
-}
