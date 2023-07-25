@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	config, err:= NewConfig("config.json")
@@ -10,14 +8,22 @@ func main() {
 		fmt.Errorf("error reading the config file: %s", err)
 	}
 
-	fontier := NewURLFrontier(config.StartURL)
-	downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
-	parser := NewParser(parseBook)
-	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
+	builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
+	
+	err = builder.GenerateStruct(config.Schema)
+	if err != nil {
+		fmt.Println("Error building Go file:", err)
+		return
+	}
 
-	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+	// fontier := NewURLFrontier(config.StartURL)
+	// downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
+	// parser := NewParser(parseBook)
+	// limiter := NewRateLimiter(config.MaxRequestsPerSecond)
 
-	crawler.Crawl()
+	// crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+
+	// crawler.Crawl()
 }
 
 //if no ai 

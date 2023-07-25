@@ -6,7 +6,18 @@
   "output_folder": "data",
   "output_name": "books",
   "output_file_extension": "json",
+
+  "schema_name": "Person",
+  "schema_model_file": "person.go",
+  "models_folder_name:": "models",
   "$schema": {
-    "example fields": "example"
+    "name": "John",
+    "age": 30,
+    "email": "john@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "zipcode": "10001"
+    }
   }
 }

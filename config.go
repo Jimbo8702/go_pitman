@@ -15,6 +15,12 @@ type Config struct {
     OutputFolder           string        `json:"output_folder"`
     OutputName             string        `json:"output_name"`
     OutputFileExtension    string        `json:"output_file_extension"`
+    
+    //struct data to scrape
+    SchemaName             string        `json:"schema_name"`
+	SchemaModelFile        string        `json:"schema_model_file"`
+	ModelsFolderName       string        `json:"models_folder_name"`
+	Schema                 map[string]interface{} `json:"$schema"`
 }
 
 func NewConfig(configFilePath string) (*Config, error) {
