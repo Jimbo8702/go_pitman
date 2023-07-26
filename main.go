@@ -2,59 +2,53 @@ package main
 
 import "fmt"
 
+// const corePrompt = "Take the this html: {html} and this golang struct: {struct}, and build me a function similar to : {function}, using this new html and struct."
+
 func main() {
 	config, err:= NewConfig("config.json")
 	if err != nil {
 		fmt.Println("error reading the config file: %s", err)
 	}
-	
-	// builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
-	// structString := builder.GenerateStructDefinition(config.Schema)
-	// fmt.Printf("Your new struct: %s", structString)
 
-	// err = builder.WriteGoFile(structString)
-	// if err != nil {
-	// 	fmt.Println("Error building Go file:", err)
-	// }
+	downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
+	builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
+	
+	structString := builder.GenerateStructDefinition(config.Schema)
+	fmt.Printf("Your new struct: %s", structString)
 
 	//downloader fetches inital html ? 
+	body, err := downloader.Download(config.StartURL)
+	if err != nil {
+		fmt.Printf("Error fetching START_URL %s: %s\n", config.StartURL, err)
+	}
 
 	//trim html 
+	html := trimHTML(body)
+	fmt.Printf("Your html string: %s", html)
 
 	//send to chatgpt to fetch tags for the following struct
-	
-	fontier := NewURLFrontier(config.StartURL)
-	downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
-	parser := NewParser(parseBook)
-	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
+		//build prompt 
+		//send to completion
+		//trim string to just function definitation
+		//build function definitation
+		//build function
+		//write golang file with struct and parse function
+		//take function pointer and return it
+		//initate parser with function
+		//begin scraping
+		
 
-	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
-
-	crawler.Crawl()
+	err = builder.WriteGoFile(structString)
+	if err != nil {
+		fmt.Println("Error building Go file:", err)
+	}
 }
 
-//if no ai 
-//we take a struct with tags 
-//take those tags and build a parse function to take the given takes and struct and extract the data from the html
-// pass the parse function to the parser and build the crawler
+// fontier := NewURLFrontier(config.StartURL)
+// downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
+// parser := NewParser(parseBook)
+// 	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
 
-//if ai
-//we need to 
-//take the start url 
-//call one call
-//take the html string and send to chatgpt
+// 	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
 
-//option - one
-//tell chatgpt to build the function to parse the given struct
-//then pass that function to parser and build the crawler
-//return the crawler 
-
-//option - two
-//tell chatgpt to take the html and the given struct, and match the tags like [structField]:[data-tag]
-//then pass that function to parser and build the crawler
-//return the crawler 
-
-//for the given struct
-//"schema" field in config
-//take schema and build a struct 
-//build a tag struct and a data struct
+// 	crawler.Crawl()

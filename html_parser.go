@@ -63,4 +63,3 @@ func (p *Parser) ExtractLinks(body string, baseURL string) []string {
 
 	return links
 }
-

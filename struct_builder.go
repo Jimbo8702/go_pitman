@@ -79,3 +79,7 @@ func (b *StructBuilder) WriteGoFile(structDef string) error {
 
 	return nil
 }
+
+//build prompt
+
+//generate function definition
