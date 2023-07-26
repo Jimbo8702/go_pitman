@@ -5,25 +5,32 @@ import "fmt"
 func main() {
 	config, err:= NewConfig("config.json")
 	if err != nil {
-		fmt.Errorf("error reading the config file: %s", err)
+		fmt.Println("error reading the config file: %s", err)
 	}
-
-	builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
 	
-	err = builder.GenerateStruct(config.Schema)
-	if err != nil {
-		fmt.Println("Error building Go file:", err)
-		return
-	}
+	// builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
+	// structString := builder.GenerateStructDefinition(config.Schema)
+	// fmt.Printf("Your new struct: %s", structString)
 
-	// fontier := NewURLFrontier(config.StartURL)
-	// downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
-	// parser := NewParser(parseBook)
-	// limiter := NewRateLimiter(config.MaxRequestsPerSecond)
+	// err = builder.WriteGoFile(structString)
+	// if err != nil {
+	// 	fmt.Println("Error building Go file:", err)
+	// }
 
-	// crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+	//downloader fetches inital html ? 
 
-	// crawler.Crawl()
+	//trim html 
+
+	//send to chatgpt to fetch tags for the following struct
+	
+	fontier := NewURLFrontier(config.StartURL)
+	downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
+	parser := NewParser(parseBook)
+	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
+
+	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+
+	crawler.Crawl()
 }
 
 //if no ai 

@@ -9,7 +9,7 @@
 
   "schema_name": "Person",
   "schema_model_file": "person.go",
-  "models_folder_name:": "models",
+  "models_folder_name": "models",
   "$schema": {
     "name": "John",
     "age": 30,

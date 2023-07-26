@@ -21,25 +21,14 @@ func NewStructBuilder(structName, outfile, outfolder string) *StructBuilder {
 	}
 }
 
-func (b * StructBuilder) GenerateStruct(schema map[string]interface{}) error {
-	structDefinition := b.GenerateStructDefinition(schema, b.StructName)
-
-	err := b.WriteGoFile(structDefinition)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (b *StructBuilder) GenerateStructDefinition(data map[string]interface{}, structName string) string {
+func (b *StructBuilder) GenerateStructDefinition(data map[string]interface{}) string {
 	var structDefBuilder strings.Builder
 
-	structDefBuilder.WriteString(fmt.Sprintf("type %s struct {\n", structName))
+	structDefBuilder.WriteString(fmt.Sprintf("type %s struct {\n", b.StructName))
 
 	for key, value := range data {
 		fieldName := strings.Title(key)
-		fieldType := b.GenerateFieldType(value)
+		fieldType := b.generateFieldType(value)
 		structDefBuilder.WriteString(fmt.Sprintf("\t%s %s `json:\"%s\"`\n", fieldName, fieldType, key))
 	}
 
@@ -47,7 +36,7 @@ func (b *StructBuilder) GenerateStructDefinition(data map[string]interface{}, st
 	return structDefBuilder.String()
 }
 
-func (b *StructBuilder) GenerateFieldType(value interface{}) string {
+func (b *StructBuilder) generateFieldType(value interface{}) string {
 	switch value.(type) {
 	case float64:
 		return "float64"
@@ -67,25 +56,25 @@ func (b *StructBuilder) GenerateFieldType(value interface{}) string {
 func (b *StructBuilder) WriteGoFile(structDef string) error {
 	err := os.MkdirAll(b.OutputFolder, os.ModePerm)
 	if err != nil {
-		return err
+		return fmt.Errorf("error checking directory: %s", err)
 	}
 
 	filePath := filepath.Join(b.OutputFolder, b.OutFileName)
 
 	file, err := os.Create(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating file: %s", err)
 	}
 	defer file.Close()
 
 	_, err = fmt.Fprintf(file, "package main\n\n")
 	if err != nil {
-		return err
+		return fmt.Errorf("error writing package to go file: %s", err)
 	}
 
 	_, err = fmt.Fprintf(file, "%s", structDef)
 	if err != nil {
-		return err
+		return fmt.Errorf("error writing package to go file: %s", err)
 	}
 
 	return nil
