@@ -11,6 +11,7 @@ import (
 type Downloader struct {
 	Client   		 *http.Client
 	UserAgent 			   string
+	// IPAddress 			   string
 	OutputFolder           string     
     OutputName             string      
     OutputFileExtension    string   
@@ -20,11 +21,16 @@ func NewDownloader(outFolder, outputName, outputFile string) *Downloader {
 	return &Downloader{
 		Client:   &http.Client{Timeout: 5 * time.Second},
 		UserAgent: "",
+		// IPAddress: "",
 		OutputFolder: outFolder,
 		OutputName: outputName,
 		OutputFileExtension: outputFile,
 	}
 }
+
+// func (d *Downloader) SetIPAddress(ipAddress string) {
+// 	d.ipAddress = ipAddress
+// }
 
 func (d *Downloader) SetUserAgent(userAgent string) {
 	d.UserAgent = userAgent 
@@ -40,7 +46,11 @@ func (d *Downloader) Download(url string) (string, error) {
 	if d.UserAgent != "" {
 		request.Header.Set("User-Agent", d.UserAgent)
 	}
-	fmt.Printf("USER_AGENT: %s", d.UserAgent)
+
+	//set the IP address for request
+	// if d.ipAddress != "" {
+	// 	request.Header.Set("X-Forwarded-For", d.ipAddress)
+	// }
 
 	response, err := d.Client.Do(request)
 	if err != nil {
