@@ -8,22 +8,22 @@ func main() {
 		fmt.Errorf("error reading the config file: %s", err)
 	}
 
-	builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
+	// builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
 	
-	err = builder.GenerateStruct(config.Schema)
-	if err != nil {
-		fmt.Println("Error building Go file:", err)
-		return
-	}
+	// err = builder.GenerateStruct(config.Schema)
+	// if err != nil {
+	// 	fmt.Println("Error building Go file:", err)
+	// 	return
+	// }
 
-	// fontier := NewURLFrontier(config.StartURL)
-	// downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
-	// parser := NewParser(parseBook)
-	// limiter := NewRateLimiter(config.MaxRequestsPerSecond)
+	fontier := NewURLFrontier(config.StartURL)
+	downloader := NewDownloader(config.OutputFolder, config.OutputName, config.OutputFileExtension)
+	parser := NewParser(parseBook)
+	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
 
-	// crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
 
-	// crawler.Crawl()
+	crawler.Crawl()
 }
 
 //if no ai 
