@@ -16,6 +16,7 @@ type Config struct {
     OutputName             string        `json:"output_name"`
     OutputFileExtension    string        `json:"output_file_extension"`
     UserAgents             []string      `json:"user_agents"`
+    IPAddress              []string      `json:"ip_addresses"`
 }
 
 func NewConfig(configFilePath string) (*Config, error) {

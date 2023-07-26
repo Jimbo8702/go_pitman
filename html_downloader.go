@@ -66,7 +66,7 @@ func (d *Downloader) Download(url string) (string, error) {
 	return string(body), nil
 }
 
-func (d *Downloader) WriteDataToJSON(data Parseable, urlNumber int) error {
+func (d *Downloader) WriteDataToJSON(data ParsedData, urlNumber int) error {
 	filename := fmt.Sprintf("%s/%s_%s_.%s", d.OutputFolder, d.OutputName ,fmt.Sprint(urlNumber), d.OutputFileExtension)
 
 	jsonString, err := json.Marshal(data)

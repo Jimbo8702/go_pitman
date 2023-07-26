@@ -8,26 +8,30 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Define a generic interface for the struct to be parsed
-type Parseable interface{}
+//base type for parseable struct
+type Parseable interface {
+	Parse(html, url string) (ParsedData, error)
+}
 
-// Define a generic parse function that takes a string and returns the parsed struct and error
-type ParseFunc func(string) (Parseable, error)
+// BaseParsedData contains common fields for parsed data
+type ParsedData struct {
+	Data []interface{}
+}
 
 // Parser struct
 type Parser struct{
-	Parser ParseFunc
+	Parser Parseable
 }
 
-func NewParser(parseFunc ParseFunc) *Parser {
+func NewParser(item Parseable) *Parser {
 	return &Parser{
-		Parser: parseFunc,
+		Parser: item,
 	}
 }
 
 // Generic Parse function that accepts the parse function and HTML string to parse
-func (p *Parser) Parse(html string) (Parseable, error) {
-	return p.Parser(html)
+func (p *Parser) Parse(html, url string) (ParsedData, error) {
+	return p.Parser.Parse(html, url)
 }
 
 func (p *Parser) ExtractLinks(body string, baseURL string) []string {

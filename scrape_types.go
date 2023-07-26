@@ -2,20 +2,23 @@ package main
 
 import (
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 type Book struct {
-	Title       string
-	Price       string
+	URL 		 string
+	Title        string
+	Price        string
 	Availability string
+	CreatedAt 	 time.Time
 }
 
-func parseBook(html string) (Parseable, error) {
+func (b Book) Parse(html, url string) (ParsedData, error) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
-		return nil, err
+		return ParsedData{}, err
 	}
 
 	var books []Book
@@ -28,15 +31,27 @@ func parseBook(html string) (Parseable, error) {
 		availability = strings.TrimSpace(availability)
 
 		book := Book{
+			URL :		 url,
 			Title:       title,
 			Price:       price,
 			Availability: availability,
+			CreatedAt: time.Now().UTC(),
 		}
 
 		books = append(books, book)
 	})
 
-	return books, nil
+	// Perform a type conversion to []interface{} for the books slice
+	var dataSlice []interface{}
+	for _, b := range books {
+		dataSlice = append(dataSlice, b)
+	}
+
+	parsedData := ParsedData{
+		Data: dataSlice,
+	}
+
+	return parsedData, nil
 }
 
 type Jet struct {

@@ -79,7 +79,7 @@ func (c *Crawler) processURL(url string) {
 	fmt.Printf("Found %d links on %s\n", len(links), url)
 
 	//parse webpage for requested data
-	data, err := c.Parser.Parse(body)
+	data, err := c.Parser.Parse(body, url)
 	if err != nil {
 		fmt.Println("Error parsing:", err)
 		return
