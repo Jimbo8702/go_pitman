@@ -13,18 +13,9 @@ func main() {
 	parser := NewParser(parseBook)
 	limiter := NewRateLimiter(config.MaxRequestsPerSecond)
 
-	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, fontier, downloader, parser, limiter)
+	crawler := NewCrawler(config.MaxURLsToCrawl, config.CrawlTimeoutSeconds, config.UserAgents, fontier, downloader, parser, limiter)
 
 	crawler.Crawl()
 }
-
-
-// builder := NewStructBuilder(config.SchemaName, config.SchemaModelFile, config.ModelsFolderName)
-	
-// err = builder.GenerateStruct(config.Schema)
-// if err != nil {
-// 	fmt.Println("Error building Go file:", err)
-// 	return
-// }
 
 

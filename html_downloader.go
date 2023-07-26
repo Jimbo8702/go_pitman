@@ -9,7 +9,8 @@ import (
 )
 
 type Downloader struct {
-	Client   *http.Client
+	Client   		 *http.Client
+	UserAgent 			   string
 	OutputFolder           string     
     OutputName             string      
     OutputFileExtension    string   
@@ -18,29 +19,41 @@ type Downloader struct {
 func NewDownloader(outFolder, outputName, outputFile string) *Downloader {
 	return &Downloader{
 		Client:   &http.Client{Timeout: 5 * time.Second},
+		UserAgent: "",
 		OutputFolder: outFolder,
 		OutputName: outputName,
 		OutputFileExtension: outputFile,
 	}
 }
 
+func (d *Downloader) SetUserAgent(userAgent string) {
+	d.UserAgent = userAgent 
+}
+
 func (d *Downloader) Download(url string) (string, error) {
-	resp, err := d.Client.Get(url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to fetch %s: %s", url, resp.Status)
-	}
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
 	}
 
-	return string(bodyBytes), nil
+	// Set the user agent in the request
+	if d.UserAgent != "" {
+		request.Header.Set("User-Agent", d.UserAgent)
+	}
+	fmt.Printf("USER_AGENT: %s", d.UserAgent)
+
+	response, err := d.Client.Do(request)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), nil
 }
 
 func (d *Downloader) WriteDataToJSON(data Parseable, urlNumber int) error {

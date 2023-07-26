@@ -13,9 +13,11 @@ type Crawler struct {
 	MaxURLsToCrawl   int
 	CrawlTimeout     time.Duration
 	CrawledURLsCount int
+	UserAgents      []string
+	UserAgentIndex  int
 }
 
-func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration, fontier *URLFrontier, downloader *Downloader, parser *Parser, limiter *RateLimiter) *Crawler {
+func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration,  userAgents []string, fontier *URLFrontier, downloader *Downloader, parser *Parser, limiter *RateLimiter) *Crawler {
 	return &Crawler{
 		Frontier: fontier,
 		Downloader: downloader,
@@ -24,6 +26,8 @@ func NewCrawler(maxURLsToCrawl int, crawlTimeout time.Duration, fontier *URLFron
 		MaxURLsToCrawl:   maxURLsToCrawl,
 		CrawlTimeout:     crawlTimeout,
 		CrawledURLsCount: 0,
+		UserAgents:      userAgents,
+		UserAgentIndex:  0,
 	}
 }
 
@@ -48,15 +52,14 @@ func (c *Crawler) Crawl() {
 	}
 }
 
-// 
-// fetches html and then extracts the links 
-// marks the link as visited
-//
 func (c *Crawler) processURL(url string) {
 	if c.Frontier.HasURL(url) {
 		fmt.Printf("Already visited url %s", url)
 		return
 	}
+
+	// Set the user-agent for the request
+	c.Downloader.SetUserAgent(c.UserAgents[c.UserAgentIndex])
 
 	body, err := c.Downloader.Download(url)
 	if err != nil {
@@ -83,6 +86,9 @@ func (c *Crawler) processURL(url string) {
 
 	c.Frontier.RemoveURL(url)
 	c.CrawledURLsCount++
+
+	// Increment the user-agent index for the next request
+	c.UserAgentIndex = (c.UserAgentIndex + 1) % len(c.UserAgents)
 
 	for _, link := range links {
 		c.Frontier.AddURL(link)
