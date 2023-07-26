@@ -8,14 +8,14 @@ import (
 	"golang.org/x/net/html"
 )
 
-//base type for parseable struct
-type Parseable interface {
-	Parse(html, url string) (ParsedData, error)
-}
-
 // BaseParsedData contains common fields for parsed data
 type ParsedData struct {
 	Data []interface{}
+}
+
+//base type for parseable struct
+type Parseable interface {
+	Parse(html, url string) (ParsedData, error)
 }
 
 // Parser struct
