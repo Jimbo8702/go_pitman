@@ -1,7 +1,7 @@
 {
-  "max_urls_to_crawl": 50,
+  "max_urls_to_crawl": 100,
   "crawl_timeout_seconds": 5,
-  "max_requests_per_second": 1,
+  "max_requests_per_second": 100,
   "start_url": "https://books.toscrape.com/",
   "output_folder": "data",
   "output_name": "books",

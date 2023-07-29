@@ -69,3 +69,7 @@ type Jet struct {
 	PriceUSD string
 	PriceNote string
 }
+
+func (j *Jet) Parse(html, url string) (ParsedData, error) {
+	return ParsedData{}, nil
+}
